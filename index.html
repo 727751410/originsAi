@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欧式世系表生成器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>欧式世系表生成器</h1>
+        
+        <form id="genealogyForm">
+            <div class="form-section">
+                <h2>丈夫信息</h2>
+                <div class="form-group">
+                    <label for="husbandName">谱名：</label>
+                    <input type="text" id="husbandName" name="husbandName" required>
+                </div>
+                <div class="form-group">
+                    <label for="husbandBirth">出生时间（农历）：</label>
+                    <input type="text" id="husbandBirth" name="husbandBirth" placeholder="例如：乾隆十九年甲戌五八时">
+                </div>
+                <div class="form-group">
+                    <label for="husbandDeath">死亡时间（农历）：</label>
+                    <input type="text" id="husbandDeath" name="husbandDeath" placeholder="例如：乾隆十九年甲戌五八时">
+                </div>
+                <div class="form-group">
+                    <label for="husbandBurial">葬地：</label>
+                    <input type="text" id="husbandBurial" name="husbandBurial" placeholder="例如：北岸盐渠上甲和尚渡向">
+                </div>
+                <div class="form-group">
+                    <label for="husbandStyle">字：</label>
+                    <input type="text" id="husbandStyle" name="husbandStyle">
+                </div>
+                <div class="form-group">
+                    <label for="husbandAlias">号：</label>
+                    <input type="text" id="husbandAlias" name="husbandAlias">
+                </div>
+                <div class="form-group">
+                    <label for="husbandPraise">赞语：</label>
+                    <textarea id="husbandPraise" name="husbandPraise"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="husbandEducation">教育：</label>
+                    <input type="text" id="husbandEducation" name="husbandEducation">
+                </div>
+                <div class="form-group">
+                    <label for="husbandOccupation">职业：</label>
+                    <input type="text" id="husbandOccupation" name="husbandOccupation">
+                </div>
+                <div class="form-group">
+                    <label for="husbandAvatar">上传头像：</label>
+                    <input type="file" id="husbandAvatar" name="husbandAvatar" accept="image/*">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>配偶信息</h2>
+                <div class="form-group">
+                    <label for="spouseName">谱名：</label>
+                    <input type="text" id="spouseName" name="spouseName" required>
+                </div>
+                <div class="form-group">
+                    <label for="spouseBirth">出生时间（农历）：</label>
+                    <input type="text" id="spouseBirth" name="spouseBirth" placeholder="例如：乾隆十九年甲戌五八时">
+                </div>
+                <div class="form-group">
+                    <label for="spouseDeath">死亡时间（农历）：</label>
+                    <input type="text" id="spouseDeath" name="spouseDeath" placeholder="例如：乾隆十九年甲戌五八时">
+                </div>
+                <div class="form-group">
+                    <label for="spouseBurial">葬地：</label>
+                    <input type="text" id="spouseBurial" name="spouseBurial" placeholder="例如：北岸盐渠上甲和尚渡向">
+                </div>
+                <div class="form-group">
+                    <label for="spouseAvatar">上传头像：</label>
+                    <input type="file" id="spouseAvatar" name="spouseAvatar" accept="image/*">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">生成世系表</button>
+        </form>
+
+        <div id="genealogyTable" class="genealogy-table">
+            <!-- 世系表将在这里动态生成 -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
