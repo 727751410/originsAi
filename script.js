@@ -121,18 +121,61 @@ document.addEventListener('DOMContentLoaded', function() {
             { label: '葬于', value: husbandData.burial }
         ];
 
-        // 将所有字段组合成一行文本
+        // 按正确顺序处理字段，在"生于"字段后插入赞语
         let fieldsText = '';
+        let praiseProcessed = false;
+        
         husbandFields.forEach((field, index) => {
             if (field.value && field.value.trim() !== '') {
+                // 如果是赞语字段，暂时跳过，稍后在"生于"字段后插入
+                if (field.value === husbandData.praise && husbandData.praise.trim() !== '') {
+                    return; // 跳过赞语字段的直接处理
+                }
+                
+                // 添加当前字段
                 fieldsText += `${field.label}${field.value}`;
+                
+                // 检查是否是"生于"字段，如果是则在其后插入赞语
+                if (!praiseProcessed && field.value === husbandData.birth) {
+                    // 在"生于"字段后插入赞语
+                    if (husbandData.praise && husbandData.praise.trim() !== '') {
+                        let fullPraiseText = husbandData.praise;
+                        let formattedPraise = '';
+                        for (let i = 0; i < fullPraiseText.length; i += 7) {
+                            formattedPraise += fullPraiseText.slice(i, i + 7) + (i + 7 < fullPraiseText.length ? '\n' : '');
+                        }
+                        fieldsText += `\n${formattedPraise}\n`;
+                        praiseProcessed = true;
+                    }
+                }
             }
         });
 
-        // 将文本按每7个字符分割成行
+        // 对整个文本按行处理：保持赞语的换行，其他内容按7字符换行
         let formattedText = '';
-        for (let i = 0; i < fieldsText.length; i += 7) {
-            formattedText += fieldsText.slice(i, i + 7) + (i + 7 < fieldsText.length ? '\n' : '');
+        const lines = fieldsText.split('\n');
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line === '') {
+                // 空行保持不变
+                formattedText += '\n';
+            } else {
+                // 检查这一行是否已经是格式化好的赞语（长度<=7且前后有空行）
+                const isPraiseLine = line.length <= 7 && 
+                                   i > 0 && i < lines.length - 1 && 
+                                   lines[i-1] === '' && lines[i+1] === '';
+                
+                if (isPraiseLine) {
+                    // 赞语行保持原样
+                    formattedText += line + '\n';
+                } else {
+                    // 其他内容按7字符换行
+                    for (let j = 0; j < line.length; j += 7) {
+                        formattedText += line.slice(j, j + 7) + (j + 7 < line.length ? '\n' : '');
+                    }
+                }
+            }
         }
 
         allDetailsText.textContent = formattedText;
