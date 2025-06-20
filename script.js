@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        // 测试一下回滚
+        
         // 获取表单数据
         const formData = {
             husband: {
