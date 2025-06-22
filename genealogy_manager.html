@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>族谱管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 世代头部样式 */
+        .generation-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6600, #ff8533);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .generation-badge {
+            background: #ff6600;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .ancestor-info {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-right: 30px;
+        }
+
+        .spouse-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            flex-grow: 1;
+        }
+
+        .marriage-symbol {
+            font-size: 20px;
+            margin: 0 10px;
+        }
+
+        .add-spouse-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 个人编辑区域 */
+        .person-editor {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .photo-section {
+            width: 120px;
+            text-align: center;
+        }
+
+        .person-photo {
+            width: 100px;
+            height: 120px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .person-photo:hover {
+            border-color: #007bff;
+        }
+
+        .photo-placeholder-text {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        #photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .upload-photo-btn {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .form-section {
+            flex: 1;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 120px;
+        }
+
+        .form-group.full-width {
+            flex: 1 1 100%;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* 子女信息表格 */
+        .children-section {
+            margin-top: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h3 {
+            color: #333;
+        }
+
+        .add-child-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .children-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .children-table th,
+        .children-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .children-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .children-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-edit { background: #007bff; color: white; }
+        .btn-move { background: #6c757d; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
+
+        /* 模态窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-success { background: #28a745; color: white; }
+
+        .date-tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .date-tab-button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .date-tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .date-tab-content {
+            display: none;
+        }
+
+        .date-tab-content.active {
+            display: block;
+        }
+
+        .date-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 100px;
+        }
+
+        .date-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* 个人信息Tab样式 */
+        .person-tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .person-tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .person-tab-button:hover {
+            color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .person-tab-button.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .tab-name.editable {
+            cursor: text;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .tab-name.editable:hover {
+            background-color: rgba(0,123,255,0.1);
+        }
+
+        .tab-name input {
+            border: none;
+            background: none;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            outline: none;
+            min-width: 60px;
+        }
+
+        .delete-tab {
+            color: #dc3545;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+            line-height: 1;
+        }
+
+        .delete-tab:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .person-tab-content {
+            display: none;
+        }
+
+        .person-tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 世代标题栏 -->
+        <div class="generation-header">
+            <div class="generation-badge">1世</div>
+            <div class="ancestor-info">赵万辅</div>
+            <div class="spouse-section">
+                <span>姬: 明氏</span>
+                <span class="marriage-symbol">⚭</span>
+                <span>址: 款氏</span>
+            </div>
+            <button class="add-spouse-btn" onclick="addNewSpouse()">+添加配偶</button>
+        </div>
+
+        <!-- Tab 导航 -->
+        <div class="person-tab-navigation" id="person-tab-navigation">
+            <button class="person-tab-button active" onclick="switchPersonTab('husband', this)" data-tab="husband">
+                <span class="tab-name">赵万辅</span>
+            </button>
+            <button class="person-tab-button" onclick="switchPersonTab('spouse', this)" data-tab="spouse">
+                <span class="tab-name editable" onclick="editTabName(event, 'spouse')" title="点击编辑名字">明氏</span>
+                <span class="delete-tab" onclick="deleteSpouseTab(event, 'spouse')" title="删除配偶">×</span>
+            </button>
+        </div>
+
+        <!-- 丈夫信息编辑区域 -->
+        <div id="husband-person-tab" class="person-tab-content active">
+            <div class="person-editor">
+                <div class="photo-section">
+                    <div class="person-photo" id="husband-person-photo">
+                        <img id="husband-photo-preview" src="" alt="头像" style="display:none; width:100%; height:100%; object-fit:cover;">
+                        <div id="husband-photo-placeholder" class="photo-placeholder-text">点击上传头像</div>
+                    </div>
+                    <button class="upload-photo-btn" onclick="selectPhoto('husband')">点击更换</button>
+                    <input type="file" id="husband-photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event, 'husband')">
+                </div>
+
+                <div class="form-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>姓</label>
+                            <input type="text" id="husband-surname" value="赵" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>名</label>
+                            <input type="text" id="husband-firstname" value="万辅" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label>官用名</label>
+                            <input type="text" id="husband-official-name" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label>性别</label>
+                            <select id="husband-gender">
+                                <option value="男" selected>男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>母亲</label>
+                            <select id="husband-mother">
+                                <option value="">请选择</option>
+                                <option value="刘氏" selected>刘氏</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>排行</label>
+                            <select id="husband-ranking" onchange="handleRankingChange(this, 'husband')">
+                                <option value="">请选择</option>
+                                <option value="长子" selected>长子</option>
+                                <option value="次子">次子</option>
+                                <option value="三子">三子</option>
+                                <option value="四子">四子</option>
+                                <option value="五子">五子</option>
+                                <option value="六子">六子</option>
+                                <option value="七子">七子</option>
+                                <option value="八子">八子</option>
+                                <option value="九子">九子</option>
+                                <option value="十子">十子</option>
+                                <option value="十一子">十一子</option>
+                                <option value="十二子">十二子</option>
+                                <option value="十三子">十三子</option>
+                                <option value="十四子">十四子</option>
+                                <option value="十五子">十五子</option>
+                                <option value="十六子">十六子</option>
+                                <option value="十七子">十七子</option>
+                                <option value="十八子">十八子</option>
+                                <option value="十九子">十九子</option>
+                                <option value="二十子">二十子</option>
+                                <option value="二十一子">二十一子</option>
+                                <option value="二十二子">二十二子</option>
+                                <option value="二十三子">二十三子</option>
+                                <option value="二十四子">二十四子</option>
+                                <option value="二十五子">二十五子</option>
+                                <option value="二十六子">二十六子</option>
+                                <option value="二十七子">二十七子</option>
+                                <option value="二十八子">二十八子</option>
+                                <option value="二十九子">二十九子</option>
+                                <option value="三十子">三十子</option>
+                                <option value="之子">之子</option>
+                                <option value="长女">长女</option>
+                                <option value="次女">次女</option>
+                                <option value="三女">三女</option>
+                                <option value="四女">四女</option>
+                                <option value="五女">五女</option>
+                                <option value="六女">六女</option>
+                                <option value="七女">七女</option>
+                                <option value="八女">八女</option>
+                                <option value="九女">九女</option>
+                                <option value="十女">十女</option>
+                                <option value="十一女">十一女</option>
+                                <option value="十二女">十二女</option>
+                                <option value="十三女">十三女</option>
+                                <option value="十四女">十四女</option>
+                                <option value="十五女">十五女</option>
+                                <option value="十六女">十六女</option>
+                                <option value="十七女">十七女</option>
+                                <option value="十八女">十八女</option>
+                                <option value="十九女">十九女</option>
+                                <option value="二十女">二十女</option>
+                                <option value="二十一女">二十一女</option>
+                                <option value="二十二女">二十二女</option>
+                                <option value="二十三女">二十三女</option>
+                                <option value="二十四女">二十四女</option>
+                                <option value="二十五女">二十五女</option>
+                                <option value="二十六女">二十六女</option>
+                                <option value="二十七女">二十七女</option>
+                                <option value="二十八女">二十八女</option>
+                                <option value="二十九女">二十九女</option>
+                                <option value="三十女">三十女</option>
+                                <option value="之女">之女</option>
+                                <option value="custom">手动输入</option>
+                            </select>
+                            <input type="text" id="husband-ranking-custom" maxlength="100" placeholder="请输入排行" style="display:none; margin-top:5px;">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>字</label>
+                            <input type="text" id="husband-zi" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>号</label>
+                            <input type="text" id="husband-hao" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>是否在世</label>
+                            <select id="husband-living-status">
+                                <option value="是" selected>是</option>
+                                <option value="否">否</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>享年</label>
+                            <input type="number" id="husband-age" placeholder="请输入阿拉伯数字" min="0" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>生日</label>
+                            <input type="text" id="husband-birthday" readonly onclick="openDateModal('husband-birthday')" placeholder="点击选择日期">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>歿于</label>
+                            <input type="text" id="husband-deathday" readonly onclick="openDateModal('husband-deathday')" placeholder="点击选择日期">
+                        </div>
+                        <div class="form-group">
+                            <label>安厝地</label>
+                            <textarea id="husband-burial-place" maxlength="500" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学校</label>
+                            <input type="text" id="husband-school" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>学历</label>
+                            <input type="text" id="husband-education" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>单位</label>
+                            <input type="text" id="husband-company" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>职务</label>
+                            <input type="text" id="husband-position" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>祖籍地</label>
+                            <input type="text" id="husband-origin" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>现居地</label>
+                            <input type="text" id="husband-current-address" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>电话</label>
+                            <input type="text" id="husband-phone" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>微信</label>
+                            <input type="text" id="husband-wechat" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>简介</label>
+                            <textarea id="husband-introduction" maxlength="600" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配偶信息编辑区域 -->
+        <div id="spouse-person-tab" class="person-tab-content">
+            <div class="person-editor">
+                <div class="photo-section">
+                    <div class="person-photo" id="spouse-person-photo">
+                        <img id="spouse-photo-preview" src="" alt="头像" style="display:none; width:100%; height:100%; object-fit:cover;">
+                        <div id="spouse-photo-placeholder" class="photo-placeholder-text">点击上传头像</div>
+                    </div>
+                    <button class="upload-photo-btn" onclick="selectPhoto('spouse')">点击更换</button>
+                    <input type="file" id="spouse-photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event, 'spouse')">
+                </div>
+
+                <div class="form-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>姓</label>
+                            <input type="text" id="spouse-surname" value="明" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>名</label>
+                            <input type="text" id="spouse-firstname" value="氏" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label>官用名</label>
+                            <input type="text" id="spouse-official-name" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label>性别</label>
+                            <select id="spouse-gender">
+                                <option value="男">男</option>
+                                <option value="女" selected>女</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>母亲</label>
+                            <select id="spouse-mother">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>排行</label>
+                            <select id="spouse-ranking" onchange="handleRankingChange(this, 'spouse')">
+                                <option value="">请选择</option>
+                                <option value="长子">长子</option>
+                                <option value="次子">次子</option>
+                                <option value="三子">三子</option>
+                                <option value="四子">四子</option>
+                                <option value="五子">五子</option>
+                                <option value="六子">六子</option>
+                                <option value="七子">七子</option>
+                                <option value="八子">八子</option>
+                                <option value="九子">九子</option>
+                                <option value="十子">十子</option>
+                                <option value="十一子">十一子</option>
+                                <option value="十二子">十二子</option>
+                                <option value="十三子">十三子</option>
+                                <option value="十四子">十四子</option>
+                                <option value="十五子">十五子</option>
+                                <option value="十六子">十六子</option>
+                                <option value="十七子">十七子</option>
+                                <option value="十八子">十八子</option>
+                                <option value="十九子">十九子</option>
+                                <option value="二十子">二十子</option>
+                                <option value="二十一子">二十一子</option>
+                                <option value="二十二子">二十二子</option>
+                                <option value="二十三子">二十三子</option>
+                                <option value="二十四子">二十四子</option>
+                                <option value="二十五子">二十五子</option>
+                                <option value="二十六子">二十六子</option>
+                                <option value="二十七子">二十七子</option>
+                                <option value="二十八子">二十八子</option>
+                                <option value="二十九子">二十九子</option>
+                                <option value="三十子">三十子</option>
+                                <option value="之子">之子</option>
+                                <option value="长女" selected>长女</option>
+                                <option value="次女">次女</option>
+                                <option value="三女">三女</option>
+                                <option value="四女">四女</option>
+                                <option value="五女">五女</option>
+                                <option value="六女">六女</option>
+                                <option value="七女">七女</option>
+                                <option value="八女">八女</option>
+                                <option value="九女">九女</option>
+                                <option value="十女">十女</option>
+                                <option value="十一女">十一女</option>
+                                <option value="十二女">十二女</option>
+                                <option value="十三女">十三女</option>
+                                <option value="十四女">十四女</option>
+                                <option value="十五女">十五女</option>
+                                <option value="十六女">十六女</option>
+                                <option value="十七女">十七女</option>
+                                <option value="十八女">十八女</option>
+                                <option value="十九女">十九女</option>
+                                <option value="二十女">二十女</option>
+                                <option value="二十一女">二十一女</option>
+                                <option value="二十二女">二十二女</option>
+                                <option value="二十三女">二十三女</option>
+                                <option value="二十四女">二十四女</option>
+                                <option value="二十五女">二十五女</option>
+                                <option value="二十六女">二十六女</option>
+                                <option value="二十七女">二十七女</option>
+                                <option value="二十八女">二十八女</option>
+                                <option value="二十九女">二十九女</option>
+                                <option value="三十女">三十女</option>
+                                <option value="之女">之女</option>
+                                <option value="custom">手动输入</option>
+                            </select>
+                            <input type="text" id="spouse-ranking-custom" maxlength="100" placeholder="请输入排行" style="display:none; margin-top:5px;">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>字</label>
+                            <input type="text" id="spouse-zi" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>号</label>
+                            <input type="text" id="spouse-hao" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>是否在世</label>
+                            <select id="spouse-living-status">
+                                <option value="是" selected>是</option>
+                                <option value="否">否</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>享年</label>
+                            <input type="number" id="spouse-age" placeholder="请输入阿拉伯数字" min="0" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>生日</label>
+                            <input type="text" id="spouse-birthday" readonly onclick="openDateModal('spouse-birthday')" placeholder="点击选择日期">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>歿于</label>
+                            <input type="text" id="spouse-deathday" readonly onclick="openDateModal('spouse-deathday')" placeholder="点击选择日期">
+                        </div>
+                        <div class="form-group">
+                            <label>安厝地</label>
+                            <textarea id="spouse-burial-place" maxlength="500" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>学校</label>
+                            <input type="text" id="spouse-school" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>学历</label>
+                            <input type="text" id="spouse-education" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>单位</label>
+                            <input type="text" id="spouse-company" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>职务</label>
+                            <input type="text" id="spouse-position" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>祖籍地</label>
+                            <input type="text" id="spouse-origin" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>现居地</label>
+                            <input type="text" id="spouse-current-address" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>电话</label>
+                            <input type="text" id="spouse-phone" maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label>微信</label>
+                            <input type="text" id="spouse-wechat" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>简介</label>
+                            <textarea id="spouse-introduction" maxlength="600" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 子女信息表格 -->
+        <div class="children-section">
+            <div class="section-header">
+                <h3>子女信息</h3>
+                <button class="add-child-btn">+添加子女</button>
+            </div>
+
+            <table class="children-table">
+                <thead>
+                    <tr>
+                        <th>姓</th>
+                        <th>名字</th>
+                        <th>生别</th>
+                        <th>父母</th>
+                        <th>夫妻</th>
+                        <th>排行</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>赵</td>
+                        <td>友权</td>
+                        <td>男</td>
+                        <td>大原父权维雅</td>
+                        <td>
+                            <select>
+                                <option value="生" selected>生</option>
+                                <option value="已故">已故</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="长子" selected>长子</option>
+                            </select>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-sm btn-edit">选择</button>
+                            <button class="btn-sm btn-move">上移</button>
+                            <button class="btn-sm btn-move">下移</button>
+                            <button class="btn-sm btn-delete">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>赵</td>
+                        <td>友慧</td>
+                        <td>女</td>
+                        <td>大原父权维雅</td>
+                        <td>
+                            <select>
+                                <option value="生" selected>生</option>
+                                <option value="已故">已故</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="次女" selected>次女</option>
+                            </select>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-sm btn-edit">选择</button>
+                            <button class="btn-sm btn-move">上移</button>
+                            <button class="btn-sm btn-move">下移</button>
+                            <button class="btn-sm btn-delete">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>赵</td>
+                        <td>后堂</td>
+                        <td>女</td>
+                        <td>大原父权维雅</td>
+                        <td>
+                            <select>
+                                <option value="生">生</option>
+                                <option value="已故" selected>已故</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="三女" selected>三女</option>
+                            </select>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-sm btn-edit">选择</button>
+                            <button class="btn-sm btn-move">上移</button>
+                            <button class="btn-sm btn-move">下移</button>
+                            <button class="btn-sm btn-delete">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary">保存信息</button>
+            <button type="button" class="btn btn-secondary">导出数据</button>
+            <button type="button" class="btn btn-success">生成族谱</button>
+        </div>
+    </div>
+
+    <!-- 日期选择模态窗口 -->
+    <div id="dateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择日期</h3>
+                <span class="close" onclick="closeDateModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="date-tab-navigation">
+                    <button class="date-tab-button active" onclick="switchDateTab('solar')">公历</button>
+                    <button class="date-tab-button" onclick="switchDateTab('lunar')">农历</button>
+                    <button class="date-tab-button" onclick="switchDateTab('custom')">自定义</button>
+                </div>
+
+                <div id="solar-tab" class="date-tab-content active">
+                    <div class="date-row">
+                        <div class="date-group">
+                            <label>年：</label>
+                            <select id="solar-year" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>月：</label>
+                            <select id="solar-month" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                                <option value="1">1月</option>
+                                <option value="2">2月</option>
+                                <option value="3">3月</option>
+                                <option value="4">4月</option>
+                                <option value="5">5月</option>
+                                <option value="6">6月</option>
+                                <option value="7">7月</option>
+                                <option value="8">8月</option>
+                                <option value="9">9月</option>
+                                <option value="10">10月</option>
+                                <option value="11">11月</option>
+                                <option value="12">12月</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>日：</label>
+                            <select id="solar-day" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>时辰：</label>
+                            <select id="solar-hour" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                                <option value="子时">子时(23:00-1:00)</option>
+                                <option value="丑时">丑时(1:00-3:00)</option>
+                                <option value="寅时">寅时(3:00-5:00)</option>
+                                <option value="卯时">卯时(5:00-7:00)</option>
+                                <option value="辰时">辰时(7:00-9:00)</option>
+                                <option value="巳时">巳时(9:00-11:00)</option>
+                                <option value="午时">午时(11:00-13:00)</option>
+                                <option value="未时">未时(13:00-15:00)</option>
+                                <option value="申时">申时(15:00-17:00)</option>
+                                <option value="酉时">酉时(17:00-19:00)</option>
+                                <option value="戌时">戌时(19:00-21:00)</option>
+                                <option value="亥时">亥时(21:00-23:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lunar-tab" class="date-tab-content">
+                    <div class="date-row">
+                        <div class="date-group">
+                            <label>年：</label>
+                            <select id="lunar-year" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>月：</label>
+                            <select id="lunar-month" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                                <option value="正月">正月</option>
+                                <option value="二月">二月</option>
+                                <option value="三月">三月</option>
+                                <option value="四月">四月</option>
+                                <option value="五月">五月</option>
+                                <option value="六月">六月</option>
+                                <option value="七月">七月</option>
+                                <option value="八月">八月</option>
+                                <option value="九月">九月</option>
+                                <option value="十月">十月</option>
+                                <option value="冬月">冬月</option>
+                                <option value="腊月">腊月</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>日：</label>
+                            <select id="lunar-day" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                                <option value="初一">初一</option>
+                                <option value="初二">初二</option>
+                                <option value="初三">初三</option>
+                                <option value="初四">初四</option>
+                                <option value="初五">初五</option>
+                                <option value="初六">初六</option>
+                                <option value="初七">初七</option>
+                                <option value="初八">初八</option>
+                                <option value="初九">初九</option>
+                                <option value="初十">初十</option>
+                                <option value="十一">十一</option>
+                                <option value="十二">十二</option>
+                                <option value="十三">十三</option>
+                                <option value="十四">十四</option>
+                                <option value="十五">十五</option>
+                                <option value="十六">十六</option>
+                                <option value="十七">十七</option>
+                                <option value="十八">十八</option>
+                                <option value="十九">十九</option>
+                                <option value="二十">二十</option>
+                                <option value="二十一">二十一</option>
+                                <option value="二十二">二十二</option>
+                                <option value="二十三">二十三</option>
+                                <option value="二十四">二十四</option>
+                                <option value="二十五">二十五</option>
+                                <option value="二十六">二十六</option>
+                                <option value="二十七">二十七</option>
+                                <option value="二十八">二十八</option>
+                                <option value="二十九">二十九</option>
+                                <option value="三十">三十</option>
+                            </select>
+                        </div>
+                        <div class="date-group">
+                            <label>时辰：</label>
+                            <select id="lunar-hour" onchange="updateDatePreview()">
+                                <option value="">请选择</option>
+                                <option value="子时">子时(23:00-1:00)</option>
+                                <option value="丑时">丑时(1:00-3:00)</option>
+                                <option value="寅时">寅时(3:00-5:00)</option>
+                                <option value="卯时">卯时(5:00-7:00)</option>
+                                <option value="辰时">辰时(7:00-9:00)</option>
+                                <option value="巳时">巳时(9:00-11:00)</option>
+                                <option value="午时">午时(11:00-13:00)</option>
+                                <option value="未时">未时(13:00-15:00)</option>
+                                <option value="申时">申时(15:00-17:00)</option>
+                                <option value="酉时">酉时(17:00-19:00)</option>
+                                <option value="戌时">戌时(19:00-21:00)</option>
+                                <option value="亥时">亥时(21:00-23:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="custom-tab" class="date-tab-content">
+                    <div class="date-group">
+                        <label>自定义日期：</label>
+                        <textarea id="custom-date" maxlength="200" rows="3" placeholder="请输入自定义日期格式..." onchange="updateDatePreview()"></textarea>
+                    </div>
+                </div>
+
+                <div class="date-preview">
+                    <h4>预览：</h4>
+                    <div id="date-preview-text">请选择日期</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="confirmDate()">确定</button>
+                <button class="btn btn-secondary" onclick="closeDateModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDateInput = '';
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            populateYears();
+            updateSolarDays();
+        });
+
+        // 填充年份选项
+        function populateYears() {
+            const currentYear = new Date().getFullYear();
+            const solarYearSelect = document.getElementById('solar-year');
+            const lunarYearSelect = document.getElementById('lunar-year');
+            
+            // 清空现有选项，保留第一个选项
+            solarYearSelect.innerHTML = '<option value="">请选择</option>';
+            lunarYearSelect.innerHTML = '<option value="">请选择</option>';
+            
+            // 添加年份选项（从1900年到当前年份+10年）
+            for (let year = 1900; year <= currentYear + 10; year++) {
+                const option1 = new Option(year + '年', year);
+                const option2 = new Option(year + '年', year);
+                solarYearSelect.add(option1);
+                lunarYearSelect.add(option2);
+            }
+        }
+
+        // 更新公历日期选项
+        function updateSolarDays() {
+            const month = parseInt(document.getElementById('solar-month').value);
+            const year = parseInt(document.getElementById('solar-year').value);
+            const daySelect = document.getElementById('solar-day');
+            
+            daySelect.innerHTML = '<option value="">请选择</option>';
+            
+            if (month) {
+                let daysInMonth = new Date(year || 2024, month, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    daySelect.add(new Option(day + '日', day));
+                }
+            }
+        }
+
+        // 排行选择处理
+        function handleRankingChange(select, prefix = '') {
+            const customInput = document.getElementById(prefix ? `${prefix}-ranking-custom` : 'ranking-custom');
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = '';
+            }
+        }
+
+        // 个人信息Tab切换
+        function switchPersonTab(tabName, buttonElement) {
+            // 隐藏所有个人信息tab内容
+            const tabs = document.querySelectorAll('.person-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // 移除所有按钮的active状态
+            const buttons = document.querySelectorAll('.person-tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // 显示选中的tab内容
+            document.getElementById(tabName + '-person-tab').classList.add('active');
+            buttonElement.classList.add('active');
+        }
+
+        // 全局变量：配偶计数器
+        let spouseCounter = 1;
+
+        // 添加新配偶
+        function addNewSpouse() {
+            spouseCounter++;
+            const spouseId = `spouse${spouseCounter}`;
+            const spouseName = `配偶${spouseCounter}`;
+
+            // 创建新的tab按钮
+            const tabNavigation = document.getElementById('person-tab-navigation');
+            const newTabButton = document.createElement('button');
+            newTabButton.className = 'person-tab-button';
+            newTabButton.setAttribute('data-tab', spouseId);
+            newTabButton.onclick = function() { switchPersonTab(spouseId, this); };
+            newTabButton.innerHTML = `
+                <span class="tab-name editable" onclick="editTabName(event, '${spouseId}')" title="点击编辑名字">${spouseName}</span>
+                <span class="delete-tab" onclick="deleteSpouseTab(event, '${spouseId}')" title="删除配偶">×</span>
+            `;
+            tabNavigation.appendChild(newTabButton);
+
+            // 创建新的tab内容
+            const container = document.querySelector('.container');
+            const newTabContent = createSpouseTabContent(spouseId, spouseName);
+            
+            // 在子女信息表格之前插入新的tab内容
+            const childrenSection = document.querySelector('.children-section');
+            container.insertBefore(newTabContent, childrenSection);
+
+            // 切换到新创建的tab
+            switchPersonTab(spouseId, newTabButton);
+        }
+
+        // 创建配偶tab内容
+        function createSpouseTabContent(spouseId, spouseName) {
+            const tabContent = document.createElement('div');
+            tabContent.id = spouseId + '-person-tab';
+            tabContent.className = 'person-tab-content';
+            
+            tabContent.innerHTML = `
+                <div class="person-editor">
+                    <div class="photo-section">
+                        <div class="person-photo" id="${spouseId}-person-photo">
+                            <img id="${spouseId}-photo-preview" src="" alt="头像" style="display:none; width:100%; height:100%; object-fit:cover;">
+                            <div id="${spouseId}-photo-placeholder" class="photo-placeholder-text">点击上传头像</div>
+                        </div>
+                        <button class="upload-photo-btn" onclick="selectPhoto('${spouseId}')">点击更换</button>
+                        <input type="file" id="${spouseId}-photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event, '${spouseId}')">
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>姓</label>
+                                <input type="text" id="${spouseId}-surname" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label>名</label>
+                                <input type="text" id="${spouseId}-firstname" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label>官用名</label>
+                                <input type="text" id="${spouseId}-official-name" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label>性别</label>
+                                <select id="${spouseId}-gender">
+                                    <option value="男">男</option>
+                                    <option value="女" selected>女</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>母亲</label>
+                                <select id="${spouseId}-mother">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>排行</label>
+                                <select id="${spouseId}-ranking" onchange="handleRankingChange(this, '${spouseId}')">
+                                    <option value="">请选择</option>
+                                    <option value="长子">长子</option>
+                                    <option value="次子">次子</option>
+                                    <option value="三子">三子</option>
+                                    <option value="四子">四子</option>
+                                    <option value="五子">五子</option>
+                                    <option value="六子">六子</option>
+                                    <option value="七子">七子</option>
+                                    <option value="八子">八子</option>
+                                    <option value="九子">九子</option>
+                                    <option value="十子">十子</option>
+                                    <option value="十一子">十一子</option>
+                                    <option value="十二子">十二子</option>
+                                    <option value="十三子">十三子</option>
+                                    <option value="十四子">十四子</option>
+                                    <option value="十五子">十五子</option>
+                                    <option value="十六子">十六子</option>
+                                    <option value="十七子">十七子</option>
+                                    <option value="十八子">十八子</option>
+                                    <option value="十九子">十九子</option>
+                                    <option value="二十子">二十子</option>
+                                    <option value="二十一子">二十一子</option>
+                                    <option value="二十二子">二十二子</option>
+                                    <option value="二十三子">二十三子</option>
+                                    <option value="二十四子">二十四子</option>
+                                    <option value="二十五子">二十五子</option>
+                                    <option value="二十六子">二十六子</option>
+                                    <option value="二十七子">二十七子</option>
+                                    <option value="二十八子">二十八子</option>
+                                    <option value="二十九子">二十九子</option>
+                                    <option value="三十子">三十子</option>
+                                    <option value="之子">之子</option>
+                                    <option value="长女">长女</option>
+                                    <option value="次女">次女</option>
+                                    <option value="三女">三女</option>
+                                    <option value="四女">四女</option>
+                                    <option value="五女">五女</option>
+                                    <option value="六女">六女</option>
+                                    <option value="七女">七女</option>
+                                    <option value="八女">八女</option>
+                                    <option value="九女">九女</option>
+                                    <option value="十女">十女</option>
+                                    <option value="十一女">十一女</option>
+                                    <option value="十二女">十二女</option>
+                                    <option value="十三女">十三女</option>
+                                    <option value="十四女">十四女</option>
+                                    <option value="十五女">十五女</option>
+                                    <option value="十六女">十六女</option>
+                                    <option value="十七女">十七女</option>
+                                    <option value="十八女">十八女</option>
+                                    <option value="十九女">十九女</option>
+                                    <option value="二十女">二十女</option>
+                                    <option value="二十一女">二十一女</option>
+                                    <option value="二十二女">二十二女</option>
+                                    <option value="二十三女">二十三女</option>
+                                    <option value="二十四女">二十四女</option>
+                                    <option value="二十五女">二十五女</option>
+                                    <option value="二十六女">二十六女</option>
+                                    <option value="二十七女">二十七女</option>
+                                    <option value="二十八女">二十八女</option>
+                                    <option value="二十九女">二十九女</option>
+                                    <option value="三十女">三十女</option>
+                                    <option value="之女">之女</option>
+                                    <option value="custom">手动输入</option>
+                                </select>
+                                <input type="text" id="${spouseId}-ranking-custom" maxlength="100" placeholder="请输入排行" style="display:none; margin-top:5px;">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>字</label>
+                                <input type="text" id="${spouseId}-zi" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label>号</label>
+                                <input type="text" id="${spouseId}-hao" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label>是否在世</label>
+                                <select id="${spouseId}-living-status">
+                                    <option value="是" selected>是</option>
+                                    <option value="否">否</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>享年</label>
+                                <input type="number" id="${spouseId}-age" placeholder="请输入阿拉伯数字" min="0" max="200">
+                            </div>
+                            <div class="form-group">
+                                <label>生日</label>
+                                <input type="text" id="${spouseId}-birthday" readonly onclick="openDateModal('${spouseId}-birthday')" placeholder="点击选择日期">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>歿于</label>
+                                <input type="text" id="${spouseId}-deathday" readonly onclick="openDateModal('${spouseId}-deathday')" placeholder="点击选择日期">
+                            </div>
+                            <div class="form-group">
+                                <label>安厝地</label>
+                                <textarea id="${spouseId}-burial-place" maxlength="500" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>学校</label>
+                                <input type="text" id="${spouseId}-school" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>学历</label>
+                                <input type="text" id="${spouseId}-education" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>单位</label>
+                                <input type="text" id="${spouseId}-company" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>职务</label>
+                                <input type="text" id="${spouseId}-position" maxlength="200">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>祖籍地</label>
+                                <input type="text" id="${spouseId}-origin" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>现居地</label>
+                                <input type="text" id="${spouseId}-current-address" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>电话</label>
+                                <input type="text" id="${spouseId}-phone" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label>微信</label>
+                                <input type="text" id="${spouseId}-wechat" maxlength="200">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>简介</label>
+                                <textarea id="${spouseId}-introduction" maxlength="600" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 为新的头像区域添加点击事件
+            setTimeout(() => {
+                const personPhoto = document.getElementById(`${spouseId}-person-photo`);
+                if (personPhoto) {
+                    personPhoto.addEventListener('click', () => selectPhoto(spouseId));
+                }
+            }, 100);
+
+            return tabContent;
+        }
+
+        // 编辑tab名字
+        function editTabName(event, spouseId) {
+            event.stopPropagation();
+            const tabNameElement = event.target;
+            const currentName = tabNameElement.textContent;
+            
+            // 创建输入框
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.maxLength = 10;
+            
+            // 替换文本为输入框
+            tabNameElement.textContent = '';
+            tabNameElement.appendChild(input);
+            input.focus();
+            input.select();
+
+            // 处理确认编辑
+            function confirmEdit() {
+                const newName = input.value.trim() || currentName;
+                tabNameElement.textContent = newName;
+                
+                // 更新表单中的姓名字段
+                const surnameField = document.getElementById(`${spouseId}-surname`);
+                const firstnameField = document.getElementById(`${spouseId}-firstname`);
+                if (surnameField && firstnameField && !surnameField.value && !firstnameField.value) {
+                    // 如果姓名字段为空，尝试拆分tab名字
+                    if (newName.length > 1) {
+                        surnameField.value = newName.charAt(0);
+                        firstnameField.value = newName.substring(1);
+                    } else {
+                        firstnameField.value = newName;
+                    }
+                }
+            }
+
+            // 监听键盘事件
+            input.addEventListener('blur', confirmEdit);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    confirmEdit();
+                } else if (e.key === 'Escape') {
+                    tabNameElement.textContent = currentName;
+                }
+            });
+        }
+
+        // 删除配偶tab
+        function deleteSpouseTab(event, spouseId) {
+            event.stopPropagation();
+            
+            if (confirm('确定要删除这个配偶吗？')) {
+                // 删除tab按钮
+                const tabButton = document.querySelector(`[data-tab="${spouseId}"]`);
+                if (tabButton) {
+                    tabButton.remove();
+                }
+                
+                // 删除tab内容
+                const tabContent = document.getElementById(`${spouseId}-person-tab`);
+                if (tabContent) {
+                    tabContent.remove();
+                }
+                
+                // 如果删除的是当前激活的tab，切换到第一个tab
+                if (tabContent && tabContent.classList.contains('active')) {
+                    const firstTab = document.querySelector('.person-tab-button');
+                    if (firstTab) {
+                        const firstTabName = firstTab.getAttribute('data-tab');
+                        switchPersonTab(firstTabName, firstTab);
+                    }
+                }
+            }
+        }
+
+        // 更新日期预览
+        function updateDatePreview() {
+            const previewElement = document.getElementById('date-preview-text');
+            const activeTab = document.querySelector('.date-tab-content.active').id;
+            
+            let previewText = '';
+            
+            if (activeTab === 'solar-tab') {
+                const year = document.getElementById('solar-year').value;
+                const month = document.getElementById('solar-month').value;
+                const day = document.getElementById('solar-day').value;
+                const hour = document.getElementById('solar-hour').value;
+                
+                if (year || month || day || hour) {
+                    previewText = '公历：';
+                    if (year) previewText += year + '年';
+                    if (month) previewText += month + '月';
+                    if (day) previewText += day + '日';
+                    if (hour) previewText += ' ' + hour;
+                } else {
+                    previewText = '请选择日期';
+                }
+            } else if (activeTab === 'lunar-tab') {
+                const year = document.getElementById('lunar-year').value;
+                const month = document.getElementById('lunar-month').value;
+                const day = document.getElementById('lunar-day').value;
+                const hour = document.getElementById('lunar-hour').value;
+                
+                if (year || month || day || hour) {
+                    previewText = '农历：';
+                    if (year) previewText += year + '年';
+                    if (month) previewText += month;
+                    if (day) previewText += day;
+                    if (hour) previewText += ' ' + hour;
+                } else {
+                    previewText = '请选择日期';
+                }
+            } else if (activeTab === 'custom-tab') {
+                const customDate = document.getElementById('custom-date').value;
+                previewText = customDate || '请输入自定义日期';
+            }
+            
+            previewElement.textContent = previewText;
+        }
+
+        function openDateModal(inputId) {
+            currentDateInput = inputId;
+            document.getElementById('dateModal').style.display = 'block';
+            updateDatePreview();
+        }
+
+        function closeDateModal() {
+            document.getElementById('dateModal').style.display = 'none';
+            // 清空选择
+            document.querySelectorAll('#dateModal select').forEach(select => select.selectedIndex = 0);
+            document.getElementById('custom-date').value = '';
+            updateDatePreview();
+        }
+
+        function switchDateTab(tabName) {
+            // 隐藏所有标签页
+            const tabs = document.querySelectorAll('.date-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.date-tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // 显示选中的标签页
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            updateDatePreview();
+        }
+
+        function confirmDate() {
+            const previewText = document.getElementById('date-preview-text').textContent;
+            if (previewText && previewText !== '请选择日期' && previewText !== '请输入自定义日期') {
+                document.getElementById(currentDateInput).value = previewText;
+            }
+            closeDateModal();
+        }
+
+        // 头像上传功能
+        function selectPhoto(prefix = '') {
+            const inputId = prefix ? `${prefix}-photo-input` : 'photo-input';
+            document.getElementById(inputId).click();
+        }
+
+        function handlePhotoUpload(event, prefix = '') {
+            const file = event.target.files[0];
+            if (file) {
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    alert('请选择图片文件！');
+                    return;
+                }
+                
+                // 检查文件大小（限制为5MB）
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('图片文件大小不能超过5MB！');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoPreviewId = prefix ? `${prefix}-photo-preview` : 'photo-preview';
+                    const placeholderId = prefix ? `${prefix}-photo-placeholder` : 'photo-placeholder';
+                    
+                    const photoPreview = document.getElementById(photoPreviewId);
+                    const placeholder = document.getElementById(placeholderId);
+                    
+                    photoPreview.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 点击头像区域也可以选择图片
+        document.addEventListener('DOMContentLoaded', function() {
+            const husbandPhoto = document.getElementById('husband-person-photo');
+            const spousePhoto = document.getElementById('spouse-person-photo');
+            
+            if (husbandPhoto) {
+                husbandPhoto.addEventListener('click', () => selectPhoto('husband'));
+            }
+            if (spousePhoto) {
+                spousePhoto.addEventListener('click', () => selectPhoto('spouse'));
+            }
+        });
+
+        // 监听月份变化更新日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const solarMonth = document.getElementById('solar-month');
+            const solarYear = document.getElementById('solar-year');
+            
+            solarMonth.addEventListener('change', updateSolarDays);
+            solarYear.addEventListener('change', updateSolarDays);
+        });
+
+        // 关闭模态窗口
+        window.onclick = function(event) {
+            const modal = document.getElementById('dateModal');
+            if (event.target == modal) {
+                closeDateModal();
+            }
+        }
+    </script>
+</body>
+</html> 
