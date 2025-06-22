@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欧式世系表生成器</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>家庭信息录入系统</title>
+    <link rel="stylesheet" href="family_styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>欧式世系表生成器</h1>
+        <h1>家庭信息录入系统</h1>
         
         <!-- Tab 导航 -->
         <div class="tab-navigation">
@@ -37,7 +37,6 @@
                         <label for="husband-mother">母亲：</label>
                         <select id="husband-mother" name="husbandMother">
                             <option value="">请选择</option>
-                            <!-- 此处可以通过JS动态添加选项 -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -127,10 +126,6 @@
                     <div class="form-group">
                         <label for="husband-wechat">微信：</label>
                         <input type="text" id="husband-wechat" name="husbandWechat" maxlength="200">
-                    </div>
-                    <div class="form-group">
-                        <label for="husbandAvatar">上传头像：</label>
-                        <input type="file" id="husbandAvatar" name="husbandAvatar" accept="image/*">
                     </div>
                 </div>
 
@@ -273,10 +268,6 @@
                         <label for="spouse-wechat">微信：</label>
                         <input type="text" id="spouse-wechat" name="spouseWechat" maxlength="200">
                     </div>
-                    <div class="form-group">
-                        <label for="spouseAvatar">上传头像：</label>
-                        <input type="file" id="spouseAvatar" name="spouseAvatar" accept="image/*">
-                    </div>
                 </div>
 
                 <div class="form-group">
@@ -286,14 +277,15 @@
             </div>
         </div>
 
-        <form id="genealogyForm">
-            <button type="submit" class="submit-btn">生成世系表</button>
-        </form>
+        <div class="form-actions">
+            <button type="button" class="submit-btn" onclick="generateGenealogyTable()">生成世系表</button>
+        </div>
 
         <div id="genealogyTable" class="genealogy-table">
             <!-- 世系表将在这里动态生成 -->
         </div>
     </div>
+
     <!-- 日期选择模态窗口 -->
     <div id="dateModal" class="modal">
         <div class="modal-content">
@@ -315,19 +307,19 @@
                         <div class="date-group">
                             <label>年：</label>
                             <select id="solar-year">
-                                <!-- 通过JS动态生成 -->
+                                <option value="">请选择</option>
                             </select>
                         </div>
                         <div class="date-group">
                             <label>月：</label>
                             <select id="solar-month">
-                                <!-- 通过JS动态生成 -->
+                                <option value="">请选择</option>
                             </select>
                         </div>
                         <div class="date-group">
                             <label>日：</label>
                             <select id="solar-day">
-                                <!-- 通过JS动态生成 -->
+                                <option value="">请选择</option>
                             </select>
                         </div>
                         <div class="date-group">
@@ -357,7 +349,7 @@
                         <div class="date-group">
                             <label>年：</label>
                             <select id="lunar-year">
-                                <!-- 通过JS动态生成 -->
+                                <option value="">请选择</option>
                             </select>
                         </div>
                         <div class="date-group">
@@ -381,7 +373,7 @@
                         <div class="date-group">
                             <label>日：</label>
                             <select id="lunar-day">
-                                <!-- 通过JS动态生成 -->
+                                <option value="">请选择</option>
                             </select>
                         </div>
                         <div class="date-group">
@@ -426,7 +418,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    
+    <script src="family_script.js"></script>
 </body>
 </html> 

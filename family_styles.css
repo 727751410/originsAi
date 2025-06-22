@@ -21,6 +21,7 @@ h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #2c3e50;
+    font-size: 28px;
 }
 
 /* Tab 导航样式 */
@@ -64,17 +65,18 @@ h1 {
 
 .form-section {
     background: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 20px;
 }
 
 h2 {
     color: #2c3e50;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
+    font-size: 22px;
 }
 
 /* 表单行样式 */
@@ -91,9 +93,10 @@ h2 {
 
 label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
     color: #555;
+    font-size: 14px;
 }
 
 input[type="text"],
@@ -101,11 +104,12 @@ input[type="number"],
 textarea,
 select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
     transition: border-color 0.3s ease;
+    font-family: inherit;
 }
 
 input[type="text"]:focus,
@@ -118,21 +122,20 @@ select:focus {
 }
 
 textarea {
-    height: 100px;
     resize: vertical;
+    min-height: 80px;
 }
 
-input[type="file"] {
-    padding: 5px 0;
+/* 表单操作按钮 */
+.form-actions {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px 0;
 }
 
-.submit-btn {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 12px;
-    background-color: #3498db;
-    color: white;
+.submit-btn, .reset-btn {
+    padding: 12px 30px;
+    margin: 0 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -140,8 +143,185 @@ input[type="file"] {
     transition: background-color 0.3s;
 }
 
+.submit-btn {
+    background-color: #3498db;
+    color: white;
+}
+
 .submit-btn:hover {
     background-color: #2980b9;
+}
+
+.reset-btn {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.reset-btn:hover {
+    background-color: #7f8c8d;
+}
+
+/* 模态窗口样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+/* 日期选择器样式 */
+.date-tab-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.date-tab-button {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.date-tab-button:hover {
+    color: #3498db;
+}
+
+.date-tab-button.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+.date-tab-content {
+    display: none;
+}
+
+.date-tab-content.active {
+    display: block;
+}
+
+.date-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.date-group {
+    flex: 1;
+    min-width: 120px;
+}
+
+.date-group label {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.date-group select,
+.date-group textarea {
+    font-size: 13px;
+    padding: 8px;
+}
+
+.date-preview {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.date-preview h4 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 14px;
+}
+
+#date-preview-text {
+    color: #666;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
 }
 
 /* 欧式demo风格世系表CSS */
@@ -278,11 +458,47 @@ input[type="file"] {
     .container {
         padding: 10px;
     }
-    
+
     .form-section {
+        padding: 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .tab-navigation {
+        flex-direction: column;
+    }
+
+    .tab-button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    .date-row {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+
+    .modal-body {
         padding: 15px;
     }
-    
+
+    .modal-footer {
+        padding: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+
     .generation-row {
         flex-direction: column;
         padding: 15px;
@@ -318,7 +534,12 @@ input[type="file"] {
         width: 100%;
     }
     
-    .detail-item {
+    .person-block, .spouse-block {
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .all-details-text {
         writing-mode: horizontal-tb;
         height: auto;
         margin: 5px 0;
@@ -328,221 +549,65 @@ input[type="file"] {
         min-height: auto;
         max-height: none;
     }
-    
-    .person-block, .spouse-block {
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
 }
 
-/* 模态窗口样式 */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+/* 自定义输入框显示/隐藏 */
+.form-group input[type="text"][style*="display:none"] {
+    margin-top: 10px;
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 0;
-    border: none;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-    background-color: #3498db;
-    color: white;
-    padding: 20px;
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.close {
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.close:hover {
-    opacity: 0.7;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-footer {
-    padding: 20px;
-    border-top: 1px solid #eee;
+/* 字符计数提示 */
+.char-count {
+    font-size: 12px;
+    color: #999;
     text-align: right;
-    background-color: #f8f9fa;
-    border-radius: 0 0 8px 8px;
+    margin-top: 5px;
 }
 
-/* 日期选择器 Tab 样式 */
-.date-tab-navigation {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ddd;
+.char-count.warning {
+    color: #e74c3c;
 }
 
-.date-tab-button {
-    background: none;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    cursor: pointer;
-    color: #666;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
+/* 表单验证样式 */
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select {
+    border-color: #e74c3c;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
 }
 
-.date-tab-button:hover {
-    color: #3498db;
-    background-color: #f8f9fa;
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
 }
 
-.date-tab-button.active {
-    color: #3498db;
-    border-bottom-color: #3498db;
-    font-weight: bold;
-}
-
-.date-tab-content {
-    display: none;
-}
-
-.date-tab-content.active {
-    display: block;
-}
-
-.date-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.date-group {
-    flex: 1;
-    min-width: 120px;
-}
-
-.date-group label {
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.date-group select,
-.date-group textarea {
-    font-size: 14px;
-    padding: 8px;
-}
-
-.date-preview {
-    margin-top: 20px;
+/* 成功提示样式 */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
     padding: 15px;
-    background-color: #f8f9fa;
     border-radius: 4px;
-    border: 1px solid #ddd;
+    margin: 20px 0;
+    border: 1px solid #c3e6cb;
 }
 
-.date-preview h4 {
-    margin-bottom: 10px;
-    color: #2c3e50;
+/* 加载状态 */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
 }
 
-#date-preview-text {
-    font-size: 16px;
-    color: #333;
-    font-weight: bold;
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
 }
 
-/* 按钮样式 */
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-left: 10px;
-    transition: background-color 0.3s;
-}
-
-.btn-primary {
-    background-color: #3498db;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #2980b9;
-}
-
-.btn-secondary {
-    background-color: #95a5a6;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #7f8c8d;
-}
-
-/* 新增响应式设计 */
-@media (max-width: 768px) {
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .tab-navigation {
-        flex-direction: column;
-    }
-
-    .tab-button {
-        width: 100%;
-        text-align: center;
-    }
-
-    .date-row {
-        flex-direction: column;
-    }
-
-    .modal-content {
-        width: 95%;
-        margin: 10% auto;
-    }
-
-    .modal-body {
-        padding: 15px;
-    }
-
-    .modal-footer {
-        padding: 15px;
-    }
-
-    .btn {
-        width: 100%;
-        margin: 5px 0;
-    }
+@keyframes spin {
+    to { transform: rotate(360deg); }
 } 
