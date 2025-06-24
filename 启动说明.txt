@@ -1,0 +1,69 @@
+族谱管理系统 - 启动说明
+============================
+
+🎯 项目概述
+-----------
+这是一个基于Spring Boot + MySQL的族谱管理系统，支持丈夫和配偶信息的管理和数据库持久化。
+
+📋 运行前准备
+-------------
+1. 确保MySQL数据库已安装并运行
+2. 创建数据库：在MySQL中执行 setup-database.sql 脚本
+3. 确认数据库连接信息：127.0.0.1:3306, 用户名: root, 密码: root
+
+🚀 启动方式 (按推荐顺序)
+-----------------------
+
+方式1: 使用IDE (推荐)
+- 使用IntelliJ IDEA、Eclipse或其他Java IDE
+- 导入项目 (File -> Open -> 选择包含pom.xml的文件夹)
+- 运行 src/main/java/com/genealogy/GenealogyManagerApplication.java
+
+方式2: 使用批处理文件
+- 双击 run.bat 文件
+- 等待应用启动完成
+
+方式3: 命令行 (如果Maven已安装)
+- 打开命令提示符或PowerShell
+- 进入项目目录
+- 运行: mvn spring-boot:run
+
+方式4: Maven Wrapper
+- 打开命令提示符或PowerShell
+- 进入项目目录
+- 运行: .\mvnw.cmd spring-boot:run
+
+🌐 访问系统
+-----------
+启动成功后，在浏览器中访问：
+http://localhost:8081/genealogy/
+
+如果8081端口被占用，可以修改 src/main/resources/application.properties 中的端口号。
+
+✅ 测试功能
+-----------
+1. 填写丈夫信息 (赵万辅 标签页)
+2. 点击"添加配偶"创建配偶信息
+3. 填写相关信息后点击"保存信息"按钮
+4. 检查MySQL数据库中的 persons 表确认数据保存成功
+
+🔧 常见问题
+-----------
+1. Java版本要求: JDK 8 或更高版本
+2. MySQL连接失败: 检查MySQL服务是否启动，数据库是否存在
+3. 端口冲突: 修改application.properties中的server.port值
+4. Maven问题: 推荐使用IDE方式运行，无需单独安装Maven
+
+📞 技术支持
+-----------
+如有问题，请检查：
+1. Java版本: java -version
+2. MySQL状态: 数据库服务是否运行
+3. 端口占用: netstat -an | findstr 8081
+4. 项目日志: 查看控制台输出的错误信息
+
+项目文件说明：
+- pom.xml: Maven配置文件
+- run.bat: Windows启动脚本
+- setup-database.sql: 数据库初始化脚本
+- README.md: 详细技术文档 
